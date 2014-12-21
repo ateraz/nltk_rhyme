@@ -1,0 +1,52 @@
+<!doctype html>
+<title>Rhyme with NLTK</title>
+<h1>Find rhymes for word</h1>
+<div>
+    <input placeholder="Word to rhyme"/>
+</div>
+<div id="result" style="min-height: 100px;">
+</div>
+<script id="resultTpl" type="text/template">
+    {{#data}}<h3>Best rhymes for {{word}}:</h3>
+    <ul>
+        {{#rhymes}}<li>{{word}}, {{level}} sounds match</li>{{/rhymes}}
+    </ul>
+    {{/data}}
+</script>
+<link href="http://jquery-loadmask.googlecode.com/svn/trunk/src/jquery.loadmask.css" rel="stylesheet" type="text/css" />
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="http://jquery-loadmask.googlecode.com/svn/trunk/src/jquery.loadmask.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+<script>
+    var delay = (function(){
+        var timer = 0;
+        return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+        };
+    }());
+
+    var template = $('#resultTpl').html();
+
+    $('input').keyup(function() {
+        var word = this.value;
+        delay(function(){
+            var url = '/rhyme/' + word;
+            $.ajax({
+                dataType: "json",
+                url: url,
+                beforeSend: function() {
+                    $("#result").html("");
+                    $("#result").mask("Waiting...");
+                },
+                complete: function() {
+                    $("#result").unmask()
+                },
+                success: function(data) {
+                    console.log(data);
+                    $('#result').html(Mustache.to_html(template, data));
+                },
+            });
+        }, 500);
+    });
+</script>
