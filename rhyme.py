@@ -3,6 +3,8 @@ import json
 
 import nltk
 
+from cache import cached_rhyme
+
 
 class Rhyme(object):
     """ Rhymes for all pronunciations of word """
@@ -17,6 +19,7 @@ class Rhyme(object):
         self.res_limit = res_limit
         self.pronunciations = [p for w, p in self.entries if w == self.word]
 
+    @cached_rhyme
     def __str__(self):
         res = []
         sorter = lambda x: x['level']
